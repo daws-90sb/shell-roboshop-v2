@@ -25,14 +25,65 @@ check_root(){
 
 VALIDATE() { 
     if [ $1 -ne 0 ]; then
-          echo -e " $TIMESTAMP [ERROR] $2.....$R FAILURE $N " | tee -a $LOGS_FILE
-          exit 1
+        echo -e " $TIMESTAMP [ERROR] $2.....$R FAILURE $N " | tee -a $LOGS_FILE
+        exit 1
     else
-          echo -e " $TIMESTAMP [INFO] $2.....$G SUCCESS $N " | tee -a $LOGS_FILE
+        echo -e " $TIMESTAMP [INFO] $2.....$G SUCCESS $N " | tee -a $LOGS_FILE
     fi             
 
 }
 
 print_total_time(){
-       echo -e  "$TIMESTAMP [INFO] script executed in $G $SECONDS seconds $N"    
+    echo -e  "$TIMESTAMP [INFO] script executed in $G $SECONDS seconds $N"    
+}
+
+app_setup(){
+        id roboshop &>> $LOGS_FILE
+    if [ $? -ne 0 ]; then
+        useradd --system --home /app --shell /sbin/nologin --comment "roboshop system user" roboshop &>> $LOGS_FILE 
+        VALIDATE $? "Creating roboshop systemuser"
+    else 
+        echo -e "sytem user roboshop already created .....$Y SKIPPING $N"
+    fi        
+
+    rm -rf /app
+    VALIDATE $? "removing existing code"
+
+    rm -rf /tmp/$app_name.zip
+    VALIDATE $? "removed $app_name zip"
+
+    mkdir -p /app  &>> $LOGS_FILE
+    VALIDATE $? "Creating App Directory"
+
+    curl -o /tmp/$app_name.zip https://roboshop-artifacts.s3.amazonaws.com/$app_name-v3.zip &>> $LOGS_FILE
+    cd /app 
+    unzip /tmp/$app_name.zip &>> $LOGS_FILE
+    VALIDATE $? "Downloaded and extracted $app_name code"
+}
+
+nodejs_setup(){
+    dnf module disable nodejs -y &>> $LOGS_FILE
+    dnf module enable nodejs:20 -y &>> $LOGS_FILE
+    dnf install nodejs -y  &>> $LOGS_FILE
+    VALIDATE $? "Installing nodejs:20"
+
+    npm install  &>> $LOGS_FILE
+    VALIDATE $? "Installing Dependencies"
+}
+
+systemd_setup(){
+    cp $SCRIPT_DIR/$app_name.service /etc/systemd/system/$app_name.service
+    VALIDATE $? "Created systemctl service"
+
+    systemctl daemon-reload
+    systemctl enable $app_name &>> $LOGS_FILE
+    VALIDATE $? "Enabling $app_name"
+}
+
+app_restart(){
+
+    systemctl restart $app_name
+    systemctl enable $app_name  &>> $LOGS_FILE
+    systemctl start $app_name   &>> $LOGS_FILE
+    VALIDATE $? "$app_name Restarting"
 }
