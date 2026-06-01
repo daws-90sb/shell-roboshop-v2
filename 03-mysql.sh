@@ -2,7 +2,7 @@
 
 source ./common.sh
 
-root_check
+check_root
 
 
 dnf install mysql-server -y &>> $LOGS_FILE
