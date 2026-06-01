@@ -1,16 +1,16 @@
 #!/bin/bash
 
 [Unit]
-Description = $app_name Service
+Description = catalogue Service
 
 [Service]
 User=roboshop
 Environment=MONGO=true
 // highlight-start
-Environment=MONGO_URL="mongodb://mongodb.daws-90sb.online:27017/$app_name"
+Environment=MONGO_URL="mongodb://mongodb.daws-90sb.online:27017/catalogue"
 // highlight-end
 ExecStart=/bin/node /app/server.js
-SyslogIdentifier=$app_name
+SyslogIdentifier=catalogue
 
 [Install]
 WantedBy=multi-user.target
