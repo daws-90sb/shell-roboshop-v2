@@ -3,15 +3,13 @@
 
 app_name=shipping
 source ./common.sh
-check_root
 
+check_root
 app_setup
 java_Setup
 systemd_setup
 
 
-cp $SCRIPT_DIR/shipping.service /etc/systemd/system/shipping.service
-VALIDATE $? "Created systemctl service"
 
 dnf install mysql -y &>> $LOGS_FILE
 VALIDATE $? "Installing mysql client"
