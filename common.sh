@@ -94,7 +94,7 @@ java_setup(){
     VALIDATE $?  "Installing Maven"
 
     mvn clean package  &>> $LOGS_FILE
-    mv target/shipping-1.0.jar shipping.jar 
+    mv target/$app_name-1.0.jar $app_name.jar 
     VALIDATE $? "Installing Dependencies"
 
 }
