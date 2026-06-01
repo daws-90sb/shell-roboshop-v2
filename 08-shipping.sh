@@ -6,6 +6,7 @@ source ./common.sh
 
 check_root
 app_setup
+
 java_Setup
 systemd_setup
 
@@ -19,9 +20,9 @@ mysql -h $MYSQL_HOST -u root -pRoboShop@1 -e "use cities" &>> $LOGS_FILE
 
 if [ $? -ne 0 ]; then
     
-   mysql -h $MYSQL_HOST -uroot -pRoboShop@1 < /app/db/schema.sql
-   mysql -h $MYSQL_HOST -uroot -pRoboShop@1 < /app/db/app-user.sql 
-   mysql -h $MYSQL_HOST -uroot -pRoboShop@1 < /app/db/master-data.sql
+   mysql -h $MYSQL_HOST -uroot -pRoboShop@1 < /app/db/schema.sql  &>> $LOGS_FILE
+   mysql -h $MYSQL_HOST -uroot -pRoboShop@1 < /app/db/app-user.sql  &>> $LOGS_FILE
+   mysql -h $MYSQL_HOST -uroot -pRoboShop@1 < /app/db/master-data.sql  &>> $LOGS_FILE
    VALIDATE $? "Data Loaded"
 else 
    echo -e "data already loaded....$Y SKIPPING $N"
