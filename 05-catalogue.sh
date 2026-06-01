@@ -25,5 +25,6 @@ else
     echo -e " products already loaded....$Y skipping $N "
 fi
 
+app_restart
 print_total_time
 
